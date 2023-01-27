@@ -11,10 +11,8 @@ public class CustomerDto {
     private String lastName;
     private String email;
     private String companiesName;
-    private String personalCode;
-
     private String companiesCode;
-
+    private String personalCode;
     private Long accountId;
 
 }
