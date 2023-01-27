@@ -6,7 +6,7 @@ public interface CustomerService {
 
     void saveCustomer(CustomerDto customer);
 
-    void deleteCustomer(CustomerDto customer);
+    void deleteCustomer(Long id);
 
     CustomerDto getCustomerById(Long id);
 
