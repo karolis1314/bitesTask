@@ -57,8 +57,17 @@ public class ServiceForSaleImpl implements ServiceForSaleService {
 
     @Override
     public ServiceForSaleDto updateService(Long id, ServiceForSaleDto serviceForSaleDto) {
+        return updateChoice(id, serviceForSaleDto, "id");
+    }
+
+    @Override
+    public ServiceForSaleDto updateServiceStatus(Long id, ServiceForSaleDto serviceForSaleDto) {
+        return updateChoice(id, serviceForSaleDto, "id", "serviceName", "description");
+    }
+
+    private ServiceForSaleDto updateChoice(Long id, ServiceForSaleDto serviceForSaleDto, String... types) {
         ServiceForSale serviceForSale = serviceRepository.findById(id).orElseThrow(() -> new ResourceAccessException("Service not found"));
-        BeanUtils.copyProperties(serviceForSaleDto, serviceForSale, "id");
+        BeanUtils.copyProperties(serviceForSaleDto, serviceForSale, types);
         return modelMapper.map(serviceRepository.save(serviceForSale), ServiceForSaleDto.class);
     }
 }

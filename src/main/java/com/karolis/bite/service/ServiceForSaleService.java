@@ -15,4 +15,7 @@ public interface ServiceForSaleService {
     List<ServiceForSaleDto> getAllServices();
 
     ServiceForSaleDto updateService(Long id, ServiceForSaleDto serviceForSaleDto);
+
+    ServiceForSaleDto updateServiceStatus(Long id, ServiceForSaleDto serviceForSaleDto);
+
 }

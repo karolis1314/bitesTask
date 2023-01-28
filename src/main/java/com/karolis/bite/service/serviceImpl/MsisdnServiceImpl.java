@@ -19,12 +19,13 @@ public class MsisdnServiceImpl implements MsisdnService {
     private final ModelMapper modelMapper;
     private MsisdnRepository msisdnRepository;
 
-    @Autowired
     private AccountServiceImpl accountService;
 
-    public MsisdnServiceImpl(ModelMapper modelMapper, MsisdnRepository msisdnRepository) {
+    @Autowired
+    public MsisdnServiceImpl(ModelMapper modelMapper, MsisdnRepository msisdnRepository, AccountServiceImpl accountService) {
         this.modelMapper = modelMapper;
         this.msisdnRepository = msisdnRepository;
+        this.accountService = accountService;
     }
     @Transactional
     @Override

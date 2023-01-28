@@ -29,11 +29,9 @@ public class Orders {
     private LocalDate activeTo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "msisdn_id")
+    @JoinColumn(name = "msisdnId")
     private Msisdn msisdn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id")
-    private ServiceForSale serviceForSale;
+    private Long serviceId;
 
 }
