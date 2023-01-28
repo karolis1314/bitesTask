@@ -4,7 +4,7 @@ import com.karolis.bite.dto.MsisdnDto;
 
 public interface MsisdnService {
 
-    void saveMsisdn(MsisdnDto msisdn);
+    MsisdnDto saveMsisdn(MsisdnDto msisdn);
 
     void deleteMsisdn(Long id);
 

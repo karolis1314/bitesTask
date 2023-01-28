@@ -2,15 +2,19 @@ package com.karolis.bite.service;
 
 import com.karolis.bite.dto.AccountDto;
 
+import java.util.List;
+
 public interface AccountService {
 
-    void saveAccount(AccountDto account);
+    AccountDto saveAccount(AccountDto account);
 
     void deleteAccount(Long id);
 
+    List<AccountDto> getAllAccounts();
+
     AccountDto getAccountById(Long id);
 
-    AccountDto getAccountByMsisdn(String msisdn);
+    AccountDto getAccountByMsisdn(Long id);
 
     AccountDto getAccountByMsisdnId(Long msisdnId);
 
