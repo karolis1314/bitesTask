@@ -1,6 +1,5 @@
 package com.karolis.bite.exceptions;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiError> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError(ex.getMessage()));
+    public ResponseEntity<ApiError> existingEmailExceptionHandler(ConflictException exception){
+        return ResponseEntity.status(422).body(new ApiError(409L, exception.getMessage(), "Try another email"));
     }
+
 }
