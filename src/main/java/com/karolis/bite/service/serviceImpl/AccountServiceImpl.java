@@ -31,20 +31,20 @@ public class AccountServiceImpl implements AccountService {
         this.accountRepository = accountRepository;
         this.customerService = customerService;
     }
+
     @Transactional
     @Override
-    public AccountDto saveAccount(AccountDto account) {
+    public AccountDto saveAccount(AccountDto account) throws ConflictException{
         try {
             Customer customer = modelMapper.map(customerService.getCustomerById(account.getCustomerId()), Customer.class);
-            customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
-            return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
+                customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
+                return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
         } catch (ConflictException e) {
             throw new ConflictException("Customer with id: " + account.getCustomerId() + " does not exist");
         }
         catch (Exception e) {
-            throw new ResourceAccessException(e.getMessage());
+            throw new RuntimeException("Account with that customer already exists.");
         }
-
     }
 
     @Transactional

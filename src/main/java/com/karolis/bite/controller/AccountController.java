@@ -3,6 +3,8 @@ package com.karolis.bite.controller;
 import com.karolis.bite.dto.AccountDto;
 import com.karolis.bite.service.serviceImpl.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +38,8 @@ public class AccountController {
     }
 
     @PostMapping
-    public AccountDto createAccount(@RequestBody @Validated AccountDto accountDto) {
-        return accountService.saveAccount(accountDto);
+    public ResponseEntity<AccountDto> createAccount(@RequestBody @Validated AccountDto accountDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountService.saveAccount(accountDto));
     }
 
     @PutMapping("/{id}")
