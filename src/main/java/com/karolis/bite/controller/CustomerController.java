@@ -3,6 +3,7 @@ package com.karolis.bite.controller;
 import com.karolis.bite.dto.CustomerDto;
 import com.karolis.bite.service.serviceImpl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,8 @@ public class CustomerController {
     @Autowired
     private CustomerServiceImpl customerService;
     @GetMapping
-    public List<CustomerDto> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public ResponseEntity<List<CustomerDto>> getAllCustomers() {
+        return ResponseEntity.ok(customerService.getAllCustomers());
     }
 
     @GetMapping("/{id}")

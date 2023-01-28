@@ -28,9 +28,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     @Override
     public CustomerDto saveCustomer(CustomerDto customer) {
-       return modelMapper
-               .map(customerRepository.save(modelMapper
-                       .map(customer, Customer.class)), CustomerDto.class);
+        try {
+            return modelMapper.map(customerRepository
+                    .save(modelMapper.map(customer, Customer.class)), CustomerDto.class);
+        } catch (Exception e) {
+            throw new ResourceAccessException("Customer with personal code: " + customer.getPersonalCode() + " already exists");
+        }
     }
 
     @Transactional

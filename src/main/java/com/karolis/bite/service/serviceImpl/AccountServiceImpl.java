@@ -1,6 +1,7 @@
 package com.karolis.bite.service.serviceImpl;
 
 import com.karolis.bite.dto.AccountDto;
+import com.karolis.bite.exceptions.ConflictException;
 import com.karolis.bite.model.Account;
 import com.karolis.bite.model.Customer;
 import com.karolis.bite.repository.AccountRepository;
@@ -33,9 +34,17 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public AccountDto saveAccount(AccountDto account) {
-        Customer customer = modelMapper.map(customerService.getCustomerById(account.getCustomerId()), Customer.class);
-        customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
-        return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
+        try {
+            Customer customer = modelMapper.map(customerService.getCustomerById(account.getCustomerId()), Customer.class);
+            customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
+            return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
+        } catch (ConflictException e) {
+            throw new ConflictException("Customer with id: " + account.getCustomerId() + " does not exist");
+        }
+        catch (Exception e) {
+            throw new ResourceAccessException(e.getMessage());
+        }
+
     }
 
     @Transactional
