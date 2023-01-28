@@ -2,6 +2,7 @@ package com.karolis.bite.service.serviceImpl;
 
 import com.karolis.bite.dto.AccountDto;
 import com.karolis.bite.exceptions.ConflictException;
+import com.karolis.bite.exceptions.NotFoundException;
 import com.karolis.bite.model.Account;
 import com.karolis.bite.model.Customer;
 import com.karolis.bite.repository.AccountRepository;
@@ -34,13 +35,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public AccountDto saveAccount(AccountDto account) throws ConflictException{
+    public AccountDto saveAccount(AccountDto account) throws ConflictException {
         try {
             Customer customer = modelMapper.map(customerService.getCustomerById(account.getCustomerId()), Customer.class);
-                customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
-                return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
-        }
-        catch (Exception e) {
+            customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
+            return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
+        } catch (Exception e) {
             throw new ConflictException("No Customer Found.");
         }
     }
@@ -48,55 +48,84 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void deleteAccount(Long id) {
-        accountRepository.deleteById(id);
+        try {
+            accountRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new NotFoundException("Account with id: " + id + " does not exist");
+        }
     }
 
     @Transactional
     @Override
     public List<AccountDto> getAllAccounts() {
-        return accountRepository.findAll()
-                .stream()
-                .map(account -> modelMapper.map(account, AccountDto.class))
-                .collect(Collectors.toList());
+        try {
+            return accountRepository
+                    .findAll()
+                    .stream()
+                    .map(account -> modelMapper.map(account, AccountDto.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new NotFoundException("No Accounts Found.");
+        }
     }
 
     @Transactional
     @Override
     public AccountDto getAccountById(Long id) {
-        return modelMapper.map(accountRepository.findById(id), AccountDto.class);
+        try {
+            return modelMapper.map(accountRepository.findById(id).orElseThrow(() -> new ResourceAccessException("Account not found")), AccountDto.class);
+        } catch (Exception e) {
+            throw new NotFoundException("Account with id: " + id + " does not exist");
+        }
     }
 
     @Transactional
     @Override
     public AccountDto getAccountByMsisdnId(Long id) {
-        return modelMapper.map(accountRepository.findAll().stream()
-                .filter(acc -> acc.getMsisdns().stream()
-                        .anyMatch(m -> m.getId().equals(id)))
-                .findFirst()
-                .orElse(null), AccountDto.class);
+        try {
+            return modelMapper.map(accountRepository.findAll().stream()
+                    .filter(acc -> acc.getMsisdns().stream()
+                            .anyMatch(m -> m.getId().equals(id)))
+                    .findFirst()
+                    .orElse(null), AccountDto.class);
+        } catch (Exception e) {
+            throw new NotFoundException("Account with msisdn id: " + id + " does not exist");
+        }
     }
 
 
     @Transactional
     @Override
     public AccountDto getAccountByCustomerId(Long customerId) {
-        return modelMapper.map(accountRepository.findAll().stream()
-                .filter(cus -> cus.getCustomer().getId().equals(customerId))
-                .findFirst()
-                .orElse(null), AccountDto.class);
+        try {
+            return modelMapper.map(accountRepository.findAll().stream()
+                    .filter(cus -> cus.getCustomer().getId().equals(customerId))
+                    .findFirst()
+                    .orElse(null), AccountDto.class);
+        } catch (Exception e) {
+            throw new NotFoundException("Account with customer id: " + customerId + " does not exist");
+        }
     }
 
     @Transactional
     @Override
     public AccountDto updateAccount(Long id, AccountDto accountDto) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new ResourceAccessException("Account not found"));
-        BeanUtils.copyProperties(accountDto, account, "id", "msisdns");
-        return modelMapper.map(accountRepository.save(account), AccountDto.class);
+       try {
+           Account account = accountRepository.findById(id).orElseThrow(() -> new ResourceAccessException("Account not found"));
+           BeanUtils.copyProperties(accountDto, account, "id", "msisdns");
+           return modelMapper.map(accountRepository.save(account), AccountDto.class);
+       } catch (Exception e) {
+           throw new NotFoundException("Account with id: " + id + " does not exist");
+       }
     }
 
     @Transactional
     @Override
     public Account findAccountById(Long accountId) {
-        return accountRepository.findById(accountId).orElse(null);
+        try {
+            return accountRepository.findById(accountId).orElseThrow(() -> new ResourceAccessException("Account not found"));
+        } catch (Exception e) {
+            throw new NotFoundException("Account with id: " + accountId + " does not exist");
+        }
     }
 }

@@ -12,4 +12,9 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(422).body(new ApiError(409L, exception.getMessage(), "Try another email"));
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> notFoundExceptionHandler(NotFoundException exception){
+        return ResponseEntity.status(404).body(new ApiError(404L, exception.getMessage(), "Double check your parameters"));
+    }
+
 }
