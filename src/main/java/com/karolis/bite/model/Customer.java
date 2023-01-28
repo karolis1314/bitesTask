@@ -17,7 +17,7 @@ public class Customer {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "firstName", nullable = false)
@@ -38,7 +38,7 @@ public class Customer {
     @Column(name = "personalCode", nullable = false)
     private String personalCode;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Account> accounts;
 
 }

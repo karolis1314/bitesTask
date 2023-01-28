@@ -3,6 +3,7 @@ package com.karolis.bite.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -22,11 +23,18 @@ public class Orders {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "orders")
-    private List<Service> services;
+    @Column(name = "activeFrom", nullable = false)
+    private LocalDate activeFrom;
+
+    @Column(name = "activeTo", nullable = false)
+    private LocalDate activeTo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "msisdn_id")
     private Msisdn msisdn;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id")
+    private Service service;
 
 }

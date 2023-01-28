@@ -16,7 +16,7 @@ public class Account {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -25,6 +25,10 @@ public class Account {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @OneToMany(mappedBy = "account")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Msisdn> msisdns;
 }
