@@ -15,4 +15,5 @@ public class OrdersDto {
         private LocalDate activeFrom;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDate activeTo;
+        private Long msisdnId;
 }

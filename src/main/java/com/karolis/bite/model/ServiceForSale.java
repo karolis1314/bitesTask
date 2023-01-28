@@ -9,8 +9,8 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "service")
-public class Service {
+@Table(name = "service_for_sale")
+public class ServiceForSale {
 
     @Id
     @Column(name = "id")

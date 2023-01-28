@@ -19,5 +19,4 @@ public interface CustomerService {
     CustomerDto getCustomerByEmail(String email);
 
     CustomerDto getCustomerByPersonalCode(String personalCode);
-
 }

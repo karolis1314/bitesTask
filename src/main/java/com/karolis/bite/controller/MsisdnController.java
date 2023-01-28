@@ -25,6 +25,11 @@ public class MsisdnController {
         msisdnService.getMsisdnById(id);
     }
 
+    @GetMapping("/account/{id}")
+    public List<MsisdnDto> getAllMsisdnsByAccountId(@PathVariable Long id) {
+        return msisdnService.getAllMsisdnsByAccountId(id);
+    }
+
     @PostMapping
     public void createMsisdn(@RequestBody MsisdnDto msisdnDto) {
         msisdnService.saveMsisdn(msisdnDto);

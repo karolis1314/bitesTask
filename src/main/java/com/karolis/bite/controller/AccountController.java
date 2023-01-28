@@ -30,6 +30,11 @@ public class AccountController {
         return accountService.getAccountByMsisdnId(id);
     }
 
+    @GetMapping("/customer/{id}")
+    public AccountDto getAccountByCustomerId(@PathVariable Long id) {
+        return accountService.getAccountByCustomerId(id);
+    }
+
     @PostMapping
     public AccountDto createAccount(@RequestBody @Validated AccountDto accountDto) {
         return accountService.saveAccount(accountDto);

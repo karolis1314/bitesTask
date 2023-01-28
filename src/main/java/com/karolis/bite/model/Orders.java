@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +33,7 @@ public class Orders {
     private Msisdn msisdn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id")
-    private Service service;
+    @JoinColumn(name = "service_for_sale_id")
+    private ServiceForSale serviceForSale;
 
 }

@@ -1,6 +1,5 @@
 package com.karolis.bite.service.serviceImpl;
 
-import com.karolis.bite.dto.AccountDto;
 import com.karolis.bite.dto.MsisdnDto;
 import com.karolis.bite.model.Account;
 import com.karolis.bite.model.Msisdn;
@@ -65,5 +64,13 @@ public class MsisdnServiceImpl implements MsisdnService {
     @Override
     public MsisdnDto updateMsisdn(Long id, MsisdnDto msisdnDto) {
         return null;
+    }
+
+    @Override
+    public List<MsisdnDto> getAllMsisdnsByAccountId(Long accountId) {
+        return msisdnRepository.findAllByAccountId(accountId)
+                .stream()
+                .map(msisdn -> modelMapper.map(msisdn, MsisdnDto.class))
+                .collect(Collectors.toList());
     }
 }

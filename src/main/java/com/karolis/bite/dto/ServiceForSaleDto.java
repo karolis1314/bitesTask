@@ -3,7 +3,7 @@ package com.karolis.bite.dto;
 import lombok.Data;
 
 @Data
-public class ServiceDto {
+public class ServiceForSaleDto {
 
     private Long id;
     private String name;

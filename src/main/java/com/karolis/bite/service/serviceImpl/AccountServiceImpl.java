@@ -2,8 +2,8 @@ package com.karolis.bite.service.serviceImpl;
 
 import com.karolis.bite.dto.AccountDto;
 import com.karolis.bite.model.Account;
+import com.karolis.bite.model.Customer;
 import com.karolis.bite.repository.AccountRepository;
-import com.karolis.bite.repository.MsisdnRepository;
 import com.karolis.bite.service.AccountService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -20,18 +20,22 @@ public class AccountServiceImpl implements AccountService {
 
     private final ModelMapper modelMapper;
 
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+
+    private final CustomerServiceImpl customerService;
 
     @Autowired
-    public AccountServiceImpl(ModelMapper modelMapper, AccountRepository accountRepository, MsisdnRepository msisdnRepository) {
+    public AccountServiceImpl(ModelMapper modelMapper, AccountRepository accountRepository, CustomerServiceImpl customerService) {
         this.modelMapper = modelMapper;
         this.accountRepository = accountRepository;
+        this.customerService = customerService;
     }
     @Transactional
     @Override
     public AccountDto saveAccount(AccountDto account) {
-        return modelMapper.map(accountRepository.save(modelMapper
-                        .map(account, Account.class)), AccountDto.class);
+        Customer customer = modelMapper.map(customerService.getCustomerById(account.getCustomerId()), Customer.class);
+        customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
+        return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
     }
 
     @Transactional
