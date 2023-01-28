@@ -4,7 +4,7 @@ import com.karolis.bite.dto.CustomerDto;
 
 public interface CustomerService {
 
-    void saveCustomer(CustomerDto customer);
+    CustomerDto saveCustomer(CustomerDto customer);
 
     void deleteCustomer(Long id);
 
