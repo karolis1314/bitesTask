@@ -13,6 +13,5 @@ public class CustomerDto {
     private String companiesName;
     private String companiesCode;
     private String personalCode;
-    private Long accountId;
 
 }

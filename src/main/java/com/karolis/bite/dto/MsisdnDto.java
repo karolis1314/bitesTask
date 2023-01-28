@@ -10,5 +10,4 @@ public class MsisdnDto {
         private Long id;
         private String activeFrom;
         private String activeTo;
-        private Long orderId;
 }

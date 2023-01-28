@@ -17,8 +17,8 @@ public class Service {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "serviceName", nullable = false)
+    private String serviceName;
 
     @Column(name = "type", nullable = false)
     private Enum type;

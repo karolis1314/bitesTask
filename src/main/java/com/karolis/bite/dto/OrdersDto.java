@@ -10,5 +10,4 @@ public class OrdersDto {
         private Long id;
         private String name;
         private Long serviceId;
-        private Long msisdnId;
 }
