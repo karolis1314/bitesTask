@@ -18,23 +18,23 @@ public class AccountController {
     private AccountServiceImpl accountService;
 
     @GetMapping
-    public List<AccountDto> getAllAccounts() {
-        return accountService.getAllAccounts();
+    public ResponseEntity<List<AccountDto>> getAllAccounts() {
+        return ResponseEntity.ok(accountService.getAllAccounts());
     }
 
     @GetMapping("/{id}")
-    public AccountDto getAccountById(@PathVariable Long id) {
-        return accountService.getAccountById(id);
+    public ResponseEntity<AccountDto> getAccountById(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.getAccountById(id));
     }
 
     @GetMapping("/msisdn/{id}")
-    public AccountDto getAccountByMsisdnId(@PathVariable Long id) {
-        return accountService.getAccountByMsisdnId(id);
+    public ResponseEntity<AccountDto> getAccountByMsisdnId(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.getAccountByMsisdnId(id));
     }
 
     @GetMapping("/customer/{id}")
-    public AccountDto getAccountByCustomerId(@PathVariable Long id) {
-        return accountService.getAccountByCustomerId(id);
+    public ResponseEntity<AccountDto> getAccountByCustomerId(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.getAccountByCustomerId(id));
     }
 
     @PostMapping
@@ -43,12 +43,12 @@ public class AccountController {
     }
 
     @PutMapping("/{id}")
-    public AccountDto updateAccount(@PathVariable Long id, @RequestBody @Validated AccountDto accountDto) {
-        return accountService.updateAccount(id, accountDto);
+    public ResponseEntity<AccountDto> updateAccount(@PathVariable Long id, @RequestBody @Validated AccountDto accountDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.updateAccount(id, accountDto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAccount(@PathVariable Long id) {
-        accountService.deleteAccount(id);
+    public ResponseEntity<String> deleteAccount(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body("Account with id: " + id + " was deleted");
     }
 }
