@@ -1,13 +1,13 @@
 package com.karolis.bite.dto;
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 
 @Data
-@Component
 public class MsisdnDto {
 
         private Long id;
-        private String activeFrom;
-        private String activeTo;
+        private LocalDate activeFrom;
+        private LocalDate activeTo;
 }
