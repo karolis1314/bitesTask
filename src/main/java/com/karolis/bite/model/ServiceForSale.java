@@ -1,5 +1,6 @@
 package com.karolis.bite.model;
 
+import com.karolis.bite.enums.ServicesEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,9 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Getter
-@Setter
-@Table(name = "service_for_sale")
+@Table(name = "service")
 public class ServiceForSale {
 
     @Id
@@ -21,7 +20,7 @@ public class ServiceForSale {
     private String serviceName;
 
     @Column(name = "type", nullable = false)
-    private Enum type;
+    private ServicesEnum type;
 
     @Column(name = "description", nullable = false)
     private String description;

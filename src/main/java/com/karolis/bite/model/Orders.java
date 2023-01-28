@@ -33,7 +33,7 @@ public class Orders {
     private Msisdn msisdn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_for_sale_id")
+    @JoinColumn(name = "service_id")
     private ServiceForSale serviceForSale;
 
 }

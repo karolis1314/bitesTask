@@ -30,8 +30,8 @@ public class ServiceForSaleImpl implements ServiceForSaleService {
     @Transactional
     @Override
     public ServiceForSaleDto saveService(ServiceForSaleDto service) {
-        return modelMapper.map(serviceRepository
-                .save(modelMapper.map(service, ServiceForSale.class)), ServiceForSaleDto.class);
+        ServiceForSale serviceForSale = modelMapper.map(service, ServiceForSale.class);
+        return modelMapper.map(serviceRepository.save(serviceForSale), ServiceForSaleDto.class);
     }
 
     @Transactional
