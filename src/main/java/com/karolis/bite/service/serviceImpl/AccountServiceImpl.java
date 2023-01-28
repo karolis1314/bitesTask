@@ -7,7 +7,6 @@ import com.karolis.bite.repository.MsisdnRepository;
 import com.karolis.bite.service.AccountService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.ResourceAccessException;
@@ -18,23 +17,23 @@ import java.util.stream.Collectors;
 @Service
 public class AccountServiceImpl implements AccountService {
 
-    @Bean
-    private ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
+    private final ModelMapper modelMapper;
 
     private AccountRepository accountRepository;
 
     private MsisdnRepository msisdnRepository;
 
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    @Autowired
+    public AccountServiceImpl(ModelMapper modelMapper, AccountRepository accountRepository, MsisdnRepository msisdnRepository) {
+        this.modelMapper = modelMapper;
         this.accountRepository = accountRepository;
+        this.msisdnRepository = msisdnRepository;
     }
     @Transactional
     @Override
     public AccountDto saveAccount(AccountDto account) {
-        return modelMapper()
-                .map(accountRepository.save(modelMapper()
+        return modelMapper
+                .map(accountRepository.save(modelMapper
                         .map(account, Account.class)), AccountDto.class);
     }
 
@@ -47,19 +46,19 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountDto> getAllAccounts() {
         return accountRepository.findAll()
                 .stream()
-                .map(account -> modelMapper().map(account, AccountDto.class))
+                .map(account -> modelMapper.map(account, AccountDto.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public AccountDto getAccountById(Long id) {
-        return modelMapper().map(accountRepository.findById(id), AccountDto.class);
+        return modelMapper.map(accountRepository.findById(id), AccountDto.class);
     }
 
     @Override
     public AccountDto getAccountByMsisdn(Long id) {
         return  msisdnRepository.findById(id)
-                .map(msisdn -> modelMapper().map(msisdn.getAccount(), AccountDto.class))
+                .map(msisdn -> modelMapper.map(msisdn.getAccount(), AccountDto.class))
                 .orElseThrow(() -> new ResourceAccessException("Msisdn not found"));
     }
 
@@ -70,6 +69,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto getAccountByCustomerId(Long customerId) {
+        return null;
+    }
+
+    @Override
+    public AccountDto updateAccount(Long id, AccountDto accountDto) {
         return null;
     }
 }

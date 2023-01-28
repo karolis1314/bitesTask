@@ -19,4 +19,6 @@ public interface AccountService {
     AccountDto getAccountByMsisdnId(Long msisdnId);
 
     AccountDto getAccountByCustomerId(Long customerId);
+
+    AccountDto updateAccount(Long id, AccountDto accountDto);
 }
