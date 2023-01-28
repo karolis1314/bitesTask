@@ -10,8 +10,8 @@ public class MsisdnDto {
 
         private Long id;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        private LocalDate activeFrom;
+        private LocalDate activeFrom = LocalDate.now();
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        private LocalDate activeTo;
+        private LocalDate activeTo = LocalDate.now().plusYears(2);
         private Long accountId;
 }

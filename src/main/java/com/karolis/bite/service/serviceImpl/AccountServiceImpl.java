@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,16 +54,15 @@ public class AccountServiceImpl implements AccountService {
         return modelMapper.map(accountRepository.findById(id), AccountDto.class);
     }
 
+    @Transactional
     @Override
-    public AccountDto getAccountByMsisdn(Long id) {
-        return  msisdnRepository.findById(id)
-                .map(msisdn -> modelMapper.map(msisdn.getAccount(), AccountDto.class))
-                .orElseThrow(() -> new ResourceAccessException("Msisdn not found"));
-    }
-
-    @Override
-    public AccountDto getAccountByMsisdnId(Long msisdnId) {
-        return null;
+    public AccountDto getAccountByMsisdnId(Long id) {
+        Account account =  accountRepository.findAll().stream()
+                .filter(acc -> acc.getMsisdns().stream()
+                        .anyMatch(m -> m.getId().equals(id)))
+                .findFirst()
+                .orElse(null);
+        return modelMapper.map(account, AccountDto.class);
     }
 
     @Override
@@ -75,5 +73,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto updateAccount(Long id, AccountDto accountDto) {
         return null;
+    }
+
+    @Override
+    public Account findAccountById(Long accountId) {
+        return accountRepository.findById(accountId).orElse(null);
     }
 }

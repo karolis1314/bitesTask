@@ -1,10 +1,13 @@
 package com.karolis.bite.service.serviceImpl;
 
+import com.karolis.bite.dto.AccountDto;
 import com.karolis.bite.dto.MsisdnDto;
+import com.karolis.bite.model.Account;
 import com.karolis.bite.model.Msisdn;
 import com.karolis.bite.repository.MsisdnRepository;
 import com.karolis.bite.service.MsisdnService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,9 @@ public class MsisdnServiceImpl implements MsisdnService {
     private final ModelMapper modelMapper;
     private MsisdnRepository msisdnRepository;
 
+    @Autowired
+    private AccountServiceImpl accountService;
+
     public MsisdnServiceImpl(ModelMapper modelMapper, MsisdnRepository msisdnRepository) {
         this.modelMapper = modelMapper;
         this.msisdnRepository = msisdnRepository;
@@ -24,9 +30,11 @@ public class MsisdnServiceImpl implements MsisdnService {
     @Transactional
     @Override
     public MsisdnDto saveMsisdn(MsisdnDto msisdn) {
-        return modelMapper
-                .map(msisdnRepository.save(modelMapper
-                        .map(msisdn, Msisdn.class)), MsisdnDto.class);
+        Msisdn ms = modelMapper.map(msisdn, Msisdn.class);
+        Account acc = accountService.findAccountById(msisdn.getAccountId());
+        ms.setAccount(acc);
+        ms = msisdnRepository.save(ms);
+        return modelMapper.map(ms, MsisdnDto.class);
     }
 
     @Override

@@ -21,10 +21,10 @@ public class Msisdn {
     private Long id;
 
     @Column(name = "activeFrom", nullable = false)
-    private LocalDate activeFrom = LocalDate.now();
+    private LocalDate activeFrom;
 
     @Column(name = "activeTo", nullable = false)
-    private LocalDate activeTo = LocalDate.now().plusYears(2);
+    private LocalDate activeTo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")

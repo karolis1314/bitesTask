@@ -26,7 +26,7 @@ public class MsisdnController {
     }
 
     @PostMapping
-    public void createMsisdn(@RequestBody @Validated MsisdnDto msisdnDto) {
+    public void createMsisdn(@RequestBody MsisdnDto msisdnDto) {
         msisdnService.saveMsisdn(msisdnDto);
     }
 
