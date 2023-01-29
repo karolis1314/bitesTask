@@ -82,7 +82,10 @@ public class MsisdnServiceImpl implements MsisdnService {
     @Override
     public MsisdnDto getMsisdnByOrderId(Long orderId) {
         try {
-            return modelMapper.map(msisdnRepository.findByOrderId(orderId), MsisdnDto.class);
+            return modelMapper.map(msisdnRepository.findAll().stream()
+                    .filter(order -> order.getOrders().stream().anyMatch(o -> o.getId().equals(orderId)))
+                    .findFirst()
+                    .orElse(null), MsisdnDto.class);
         } catch (Exception e) {
             throw new NotFoundException("Msisdn with order id: " + orderId + " was not found.");
         }

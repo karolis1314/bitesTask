@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface MsisdnRepository extends JpaRepository<Msisdn, Long> {
     List<Msisdn> findAllByAccountId(Long accountId);
-
-    Msisdn findByOrderId(Long orderId);
 }
