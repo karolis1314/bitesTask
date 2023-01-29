@@ -13,12 +13,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.karolis.bite.Constants.AccountExceptionConstants.*;
+import static com.karolis.bite.Constants.CommonMethods.formatErrorMessageForConstantMessage;
+import static com.karolis.bite.Constants.GeneralErrorMessages.*;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -44,13 +47,11 @@ public class AccountServiceImpl implements AccountService {
             customer.setAccounts(List.of(modelMapper.map(account, Account.class)));
             return modelMapper.map(accountRepository.save(modelMapper.map(account, Account.class)), AccountDto.class);
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException("Customer with id: " + account.getCustomerId() + " does not exist");
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Customer with id: " + account.getCustomerId() + " does not exist");
+            throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND_BY_CUSTOMER_ID, account.getCustomerId()));
         } catch (org.hibernate.PropertyValueException e) {
-            throw new PropertyValueException("You are missing parameters, make sure you add all required parameters.");
+            throw new PropertyValueException(PROPERTY_VALUE_ERROR);
         } catch (Exception e) {
-            throw new ServerErrorException("Something went wrong on our end, please try again later.");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 
@@ -60,11 +61,9 @@ public class AccountServiceImpl implements AccountService {
         try {
             accountRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException("Account with id: " + id + " does not exist");
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Account with id: " + id + " does not exist");
+            throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND, id));
         } catch (Exception e) {
-            throw new ServerErrorException("Something went wrong on our end, please try again later.");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 
@@ -78,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
                     .map(account -> modelMapper.map(account, AccountDto.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new ServerErrorException("Something went wrong on our end, please try again later.");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 
@@ -86,13 +85,12 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto getAccountById(Long id) {
         try {
-            return modelMapper.map(accountRepository.findById(id).orElseThrow(() -> new DataIntegrityViolationException("Account not found")), AccountDto.class);
+            return modelMapper.map(accountRepository.findById(id)
+                    .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND, id))), AccountDto.class);
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException("Account with id: " + id + " does not exist");
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Account with id: " + id + " does not exist");
+            throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND, id));
         } catch (Exception e) {
-            throw new ServerErrorException("Something went wrong on our end, please try again later.");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 
@@ -104,13 +102,11 @@ public class AccountServiceImpl implements AccountService {
                     .filter(acc -> acc.getMsisdns().stream()
                             .anyMatch(m -> m.getId().equals(id)))
                     .findFirst()
-                    .orElseThrow(() -> new DataIntegrityViolationException("Not Found")), AccountDto.class);
+                    .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND_BY_MSISDN_ID, id))), AccountDto.class);
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException("Account with msisdnId: " + id + " does not exist");
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Account with msisdnId: " + id + " does not exist");
+            throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND_BY_MSISDN_ID, id));
         } catch (Exception e) {
-            throw new ServerErrorException("Something went wrong on our end, please try again later.");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 
@@ -122,13 +118,11 @@ public class AccountServiceImpl implements AccountService {
             return modelMapper.map(accountRepository.findAll().stream()
                     .filter(cus -> cus.getCustomer().getId().equals(customerId))
                     .findFirst()
-                    .orElseThrow(() -> new DataIntegrityViolationException("Not Found")), AccountDto.class);
+                    .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND_BY_CUSTOMER_ID, customerId))), AccountDto.class);
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException("Account with customerId: " + customerId + " does not exist");
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Account with customerId: " + customerId + " does not exist");
+            throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND_BY_CUSTOMER_ID, customerId));
         } catch (Exception e) {
-            throw new ServerErrorException("Something went wrong on our end, please try again later.");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 
@@ -140,13 +134,11 @@ public class AccountServiceImpl implements AccountService {
            BeanUtils.copyProperties(accountDto, account, "id", "msisdns");
            return modelMapper.map(accountRepository.save(account), AccountDto.class);
        } catch (DataIntegrityViolationException e) {
-           throw new NotFoundException("Account with id: " + id + " does not exist");
-       } catch (EmptyResultDataAccessException e) {
-           throw new NotFoundException("Account with id: " + id + " does not exist");
+           throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND, id));
        } catch (org.hibernate.PropertyValueException e) {
-              throw new PropertyValueException("Account with id: " + id + " already exists.");
+              throw new PropertyValueException(PROPERTY_VALUE_ERROR);
        }catch (Exception e) {
-           throw new ServerErrorException("Something went wrong on our end, please try again later.");
+           throw new ServerErrorException(SERVER_ERROR);
        }
     }
 
@@ -154,13 +146,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account findAccountById(Long accountId) {
         try {
-            return accountRepository.findById(accountId).orElseThrow(() -> new DataIntegrityViolationException("Account not found"));
+            return accountRepository.findById(accountId).orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND, accountId)));
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException("Account with id: " + accountId + " does not exist");
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Account with id: " + accountId + " does not exist");
+            throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND, accountId));
         } catch (Exception e) {
-            throw new ServerErrorException("Something went wrong on our end, please try again later.");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 }

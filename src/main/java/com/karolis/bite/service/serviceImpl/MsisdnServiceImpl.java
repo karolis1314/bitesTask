@@ -12,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.karolis.bite.Constants.CommonMethods.formatErrorMessageForConstantMessage;
 import static com.karolis.bite.Constants.GeneralErrorMessages.*;
 import static com.karolis.bite.Constants.MsisdnExceptionConstants.*;
 
@@ -48,8 +48,6 @@ public class MsisdnServiceImpl implements MsisdnService {
             return modelMapper.map(ms, MsisdnDto.class);
         } catch (DataIntegrityViolationException e) {
                 throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND_BY_ACCOUNT_ID, msisdn.getAccountId()));
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND_BY_ACCOUNT_ID, msisdn.getAccountId()));
         } catch (org.hibernate.PropertyValueException e) {
             throw new PropertyValueException(PROPERTY_VALUE_ERROR);
         } catch (Exception e) {
@@ -77,8 +75,6 @@ public class MsisdnServiceImpl implements MsisdnService {
             msisdnRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND, id));
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND, id));
         } catch (Exception e) {
             throw new ServerErrorException(SERVER_ERROR);
         }
@@ -92,8 +88,6 @@ public class MsisdnServiceImpl implements MsisdnService {
                     .map(msisdn -> modelMapper.map(msisdn, MsisdnDto.class))
                     .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND, id)));
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND, id));
-        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND, id));
         } catch (Exception e) {
             throw new ServerErrorException(SERVER_ERROR);
@@ -109,8 +103,6 @@ public class MsisdnServiceImpl implements MsisdnService {
                     .findFirst()
                     .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND_BY_ORDER_ID, orderId))), MsisdnDto.class);
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND_BY_ORDER_ID, orderId));
-        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND_BY_ORDER_ID, orderId));
         } catch (Exception e) {
             throw new ServerErrorException(SERVER_ERROR);
@@ -131,8 +123,6 @@ public class MsisdnServiceImpl implements MsisdnService {
             return modelMapper.map(msisdnRepository.save(msisdn), MsisdnDto.class);
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND, id));
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND, id));
         } catch (Exception e) {
             throw new ServerErrorException(SERVER_ERROR);
         }
@@ -148,14 +138,8 @@ public class MsisdnServiceImpl implements MsisdnService {
                     .collect(Collectors.toList());
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND_BY_ACCOUNT_ID, accountId));
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(formatErrorMessageForConstantMessage(MSISDN_NOT_FOUND_BY_ACCOUNT_ID, accountId));
         } catch (Exception e) {
             throw new ServerErrorException(SERVER_ERROR);
         }
-    }
-    
-    private String formatErrorMessageForConstantMessage(String message, Long id){
-        return String.format(message, id);
     }
 }
