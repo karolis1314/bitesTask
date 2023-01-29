@@ -3,6 +3,8 @@ package com.karolis.bite.controller;
 import com.karolis.bite.dto.MsisdnDto;
 import com.karolis.bite.service.serviceImpl.MsisdnServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,33 +18,34 @@ public class MsisdnController {
     private MsisdnServiceImpl msisdnService;
 
     @GetMapping
-    public List<MsisdnDto> getAllMsisdns() {
-        return msisdnService.getAllMsisdns();
+    public ResponseEntity<List<MsisdnDto>> getAllMsisdns() {
+        return ResponseEntity.ok(msisdnService.getAllMsisdns());
     }
 
     @GetMapping("/{id}")
-    public void getMsisdnById(@PathVariable Long id) {
-        msisdnService.getMsisdnById(id);
+    public ResponseEntity<MsisdnDto> getMsisdnById(@PathVariable Long id) {
+        return ResponseEntity.ok(msisdnService.getMsisdnById(id));
     }
 
     @GetMapping("/account/{id}")
-    public List<MsisdnDto> getAllMsisdnsByAccountId(@PathVariable Long id) {
-        return msisdnService.getAllMsisdnsByAccountId(id);
+    public ResponseEntity<List<MsisdnDto>> getAllMsisdnsByAccountId(@PathVariable Long id) {
+        return ResponseEntity.ok(msisdnService.getAllMsisdnsByAccountId(id));
     }
 
     @PostMapping
-    public void createMsisdn(@RequestBody MsisdnDto msisdnDto) {
-        msisdnService.saveMsisdn(msisdnDto);
+    public ResponseEntity<MsisdnDto> createMsisdn(@RequestBody MsisdnDto msisdnDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(msisdnService.saveMsisdn(msisdnDto));
     }
 
     @PutMapping("/{id}")
-    public void updateMsisdn(@PathVariable Long id, @RequestBody @Validated MsisdnDto msisdnDto) {
-        msisdnService.updateMsisdn(id, msisdnDto);
+    public ResponseEntity<MsisdnDto> updateMsisdn(@PathVariable Long id, @RequestBody @Validated MsisdnDto msisdnDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(msisdnService.updateMsisdn(id, msisdnDto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMsisdn(@PathVariable Long id) {
+    public ResponseEntity<String> deleteMsisdn(@PathVariable Long id) {
         msisdnService.deleteMsisdn(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Msisdn with id: " + id + " was deleted");
     }
 
 
