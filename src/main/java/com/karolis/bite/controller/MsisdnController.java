@@ -32,6 +32,11 @@ public class MsisdnController {
         return ResponseEntity.ok(msisdnService.getAllMsisdnsByAccountId(id));
     }
 
+    @GetMapping("/order/{id}")
+    public ResponseEntity<MsisdnDto> getMsisdnsByOrderId(@PathVariable Long id) {
+        return ResponseEntity.ok(msisdnService.getMsisdnByOrderId(id));
+    }
+
     @PostMapping
     public ResponseEntity<MsisdnDto> createMsisdn(@RequestBody MsisdnDto msisdnDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(msisdnService.saveMsisdn(msisdnDto));
@@ -39,7 +44,7 @@ public class MsisdnController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MsisdnDto> updateMsisdn(@PathVariable Long id, @RequestBody @Validated MsisdnDto msisdnDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(msisdnService.updateMsisdn(id, msisdnDto));
+        return ResponseEntity.status(HttpStatus.OK).body(msisdnService.updateMsisdnExtendTwoYears(id, msisdnDto));
     }
 
     @DeleteMapping("/{id}")

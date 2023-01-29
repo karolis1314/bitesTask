@@ -16,7 +16,7 @@ public interface MsisdnService {
 
     MsisdnDto getMsisdnByOrderId(Long orderId);
 
-    MsisdnDto updateMsisdn(Long id, MsisdnDto msisdnDto);
+    MsisdnDto updateMsisdnExtendTwoYears(Long id, MsisdnDto msisdnDto);
 
     List<MsisdnDto> getAllMsisdnsByAccountId(Long accountId);
 }
