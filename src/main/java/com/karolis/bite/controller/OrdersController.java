@@ -3,6 +3,8 @@ package com.karolis.bite.controller;
 import com.karolis.bite.dto.OrdersDto;
 import com.karolis.bite.service.serviceImpl.OrderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,32 +18,38 @@ public class OrdersController {
     private OrderServiceImpl orderService;
 
     @GetMapping
-    public List<OrdersDto> getAllOrders() {
-        return orderService.getAllOrders();
+    public ResponseEntity<List<OrdersDto>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
     @GetMapping("/{id}")
-    public OrdersDto getOrderById(@PathVariable Long id) {
-        return orderService.getOrderById(id);
+    public ResponseEntity<OrdersDto> getOrderById(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @GetMapping("/service/{id}")
-    public OrdersDto getOrderByServiceId(@PathVariable Long serviceId) {
-        return orderService.getOrderByServiceId(serviceId);
+    public ResponseEntity<List<OrdersDto>> getOrderByServiceId(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrderByServiceId(id));
     }
 
     @GetMapping("/msisdn/{id}")
-    public OrdersDto getOrderByMsisdnId(@PathVariable Long msisdnId) {
-        return orderService.getOrderByMsisdnId(msisdnId);
+    public ResponseEntity<List<OrdersDto>> getOrderByMsisdnId(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrderByMsisdnId(id));
     }
 
     @PostMapping
-    public OrdersDto createOrder(@RequestBody @Validated OrdersDto ordersDto) {
-        return orderService.saveOrder(ordersDto);
+    public ResponseEntity<OrdersDto> createOrder(@RequestBody @Validated OrdersDto ordersDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.saveOrder(ordersDto));
     }
 
     @PutMapping("/{id}")
-    public OrdersDto updateOrder(@PathVariable Long id, @RequestBody @Validated OrdersDto ordersDto) {
-        return orderService.updateOrder(id, ordersDto);
+    public ResponseEntity<OrdersDto> updateOrder(@PathVariable Long id, @RequestBody @Validated OrdersDto ordersDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.updateOrder(id, ordersDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Order with id: " + id + " was deleted");
     }
 }

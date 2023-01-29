@@ -1,18 +1,25 @@
 package com.karolis.bite.service.serviceImpl;
 
 import com.karolis.bite.dto.ServiceForSaleDto;
+import com.karolis.bite.exceptions.NotFoundException;
+import com.karolis.bite.exceptions.PropertyValueException;
+import com.karolis.bite.exceptions.ServerErrorException;
 import com.karolis.bite.model.ServiceForSale;
 import com.karolis.bite.repository.ServiceRepository;
 import com.karolis.bite.service.ServiceForSaleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.karolis.bite.Constants.CommonMethods.formatErrorMessageForConstantMessage;
+import static com.karolis.bite.Constants.GeneralErrorMessages.PROPERTY_VALUE_ERROR;
+import static com.karolis.bite.Constants.GeneralErrorMessages.SERVER_ERROR;
 
 @Service
 public class ServiceForSaleImpl implements ServiceForSaleService {
@@ -20,6 +27,8 @@ public class ServiceForSaleImpl implements ServiceForSaleService {
     private final ModelMapper modelMapper;
 
     private final ServiceRepository serviceRepository;
+
+    private final String SERVICE_NOT_FOUND = "Service with id %s not found";
 
     @Autowired
     public ServiceForSaleImpl(ModelMapper modelMapper, ServiceRepository serviceRepository) {
@@ -30,43 +39,83 @@ public class ServiceForSaleImpl implements ServiceForSaleService {
     @Transactional
     @Override
     public ServiceForSaleDto saveService(ServiceForSaleDto service) {
-        ServiceForSale serviceForSale = modelMapper.map(service, ServiceForSale.class);
-        return modelMapper.map(serviceRepository.save(serviceForSale), ServiceForSaleDto.class);
+        try {
+            return modelMapper.map(serviceRepository.save(modelMapper.map(service, ServiceForSale.class)), ServiceForSaleDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, service.getId()));
+        } catch (org.hibernate.PropertyValueException e) {
+            throw new PropertyValueException(PROPERTY_VALUE_ERROR);
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Transactional
     @Override
     public void deleteService(Long id) {
-        serviceRepository.deleteById(id);
+        try {
+            serviceRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, id));
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Transactional
     @Override
     public ServiceForSaleDto getServiceById(Long id) {
-        return modelMapper.map(serviceRepository.findById(id), ServiceForSaleDto.class);
+        try {
+            return modelMapper.map(serviceRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, id))), ServiceForSaleDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, id));
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Override
     public List<ServiceForSaleDto> getAllServices() {
-        return serviceRepository
-                .findAll()
-                .stream()
-                .map(service -> modelMapper.map(service, ServiceForSaleDto.class))
-                .collect(Collectors.toList());
+        try {
+            return serviceRepository
+                    .findAll()
+                    .stream()
+                    .map(service -> modelMapper.map(service, ServiceForSaleDto.class)).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Override
     public ServiceForSaleDto updateService(Long id, ServiceForSaleDto serviceForSaleDto) {
-        return updateChoice(id, serviceForSaleDto, "id");
+        try {
+            return updateChoice(id, serviceForSaleDto, "id");
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, id));
+        } catch (org.hibernate.PropertyValueException e) {
+            throw new PropertyValueException(PROPERTY_VALUE_ERROR);
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Override
     public ServiceForSaleDto updateServiceStatus(Long id, ServiceForSaleDto serviceForSaleDto) {
-        return updateChoice(id, serviceForSaleDto, "id", "serviceName", "description");
+        try {
+            return updateChoice(id, serviceForSaleDto, "id", "serviceName", "description");
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, id));
+        } catch (org.hibernate.PropertyValueException e) {
+            throw new PropertyValueException(PROPERTY_VALUE_ERROR);
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     private ServiceForSaleDto updateChoice(Long id, ServiceForSaleDto serviceForSaleDto, String... types) {
-        ServiceForSale serviceForSale = serviceRepository.findById(id).orElseThrow(() -> new ResourceAccessException("Service not found"));
+        ServiceForSale serviceForSale = serviceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, id)));
         BeanUtils.copyProperties(serviceForSaleDto, serviceForSale, types);
         return modelMapper.map(serviceRepository.save(serviceForSale), ServiceForSaleDto.class);
     }

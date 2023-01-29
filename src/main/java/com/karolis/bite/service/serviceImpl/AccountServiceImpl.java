@@ -113,12 +113,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public AccountDto getAccountByCustomerId(Long customerId) {
+    public List<AccountDto> getAccountByCustomerId(Long customerId) {
         try {
-            return modelMapper.map(accountRepository.findAll().stream()
-                    .filter(cus -> cus.getCustomer().getId().equals(customerId))
-                    .findFirst()
-                    .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND_BY_CUSTOMER_ID, customerId))), AccountDto.class);
+            return accountRepository.findAll().stream()
+                    .filter(acc -> acc.getCustomer().getId().equals(customerId))
+                    .map(acc -> modelMapper.map(acc, AccountDto.class))
+                    .collect(Collectors.toList());
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(ACCOUNT_NOT_FOUND_BY_CUSTOMER_ID, customerId));
         } catch (Exception e) {

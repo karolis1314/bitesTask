@@ -12,9 +12,9 @@ public interface OrderService {
 
     OrdersDto getOrderById(Long id);
 
-    OrdersDto getOrderByServiceId(Long serviceId);
+    List<OrdersDto> getOrderByServiceId(Long serviceId);
 
-    OrdersDto getOrderByMsisdnId(Long msisdnId);
+    List<OrdersDto> getOrderByMsisdnId(Long msisdnId);
 
     List<OrdersDto> getAllOrders();
 

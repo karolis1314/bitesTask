@@ -3,6 +3,7 @@ package com.karolis.bite.controller;
 import com.karolis.bite.dto.CustomerDto;
 import com.karolis.bite.service.serviceImpl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,23 +21,34 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public CustomerDto getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerById(id);
+    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long id) {
+        return ResponseEntity.ok(customerService.getCustomerById(id));
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<CustomerDto> getCustomerByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(customerService.getCustomerByEmail(email));
+    }
+
+    @GetMapping("/personalCode/{personalCode}")
+    public ResponseEntity<CustomerDto> getCustomerByPersonalCode(@PathVariable String personalCode) {
+        return ResponseEntity.ok(customerService.getCustomerByPersonalCode(personalCode));
     }
 
     @PostMapping
-    public CustomerDto createCustomer(@RequestBody @Validated CustomerDto customerDto) {
-        return customerService.saveCustomer(customerDto);
+    public ResponseEntity<CustomerDto> createCustomer(@RequestBody @Validated CustomerDto customerDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(customerService.saveCustomer(customerDto));
     }
 
     @PutMapping("/{id}")
-    public CustomerDto updateCustomer(@PathVariable Long id, @RequestBody @Validated CustomerDto customerDto) {
-        return customerService.updateCustomer(id, customerDto);
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id, @RequestBody @Validated CustomerDto customerDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(customerService.updateCustomer(id, customerDto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<String> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Customer with id: " + id + " was deleted");
     }
 
 }

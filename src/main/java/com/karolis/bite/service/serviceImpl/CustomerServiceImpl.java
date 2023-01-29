@@ -1,24 +1,32 @@
 package com.karolis.bite.service.serviceImpl;
 
 import com.karolis.bite.dto.CustomerDto;
+import com.karolis.bite.exceptions.NotFoundException;
+import com.karolis.bite.exceptions.PropertyValueException;
+import com.karolis.bite.exceptions.ServerErrorException;
 import com.karolis.bite.model.Customer;
 import com.karolis.bite.repository.CustomerRepository;
 import com.karolis.bite.service.CustomerService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.karolis.bite.Constants.CommonMethods.formatErrorMessageForConstantMessage;
+import static com.karolis.bite.Constants.CustomerExceptionConstants.*;
+import static com.karolis.bite.Constants.GeneralErrorMessages.*;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
     private final ModelMapper modelMapper;
 
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     @Autowired
     public CustomerServiceImpl(ModelMapper modelMapper, CustomerRepository customerRepository) {
@@ -31,52 +39,92 @@ public class CustomerServiceImpl implements CustomerService {
         try {
             return modelMapper.map(customerRepository
                     .save(modelMapper.map(customer, Customer.class)), CustomerDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, customer.getId()));
+        } catch (org.hibernate.PropertyValueException e) {
+            throw new PropertyValueException(PROPERTY_VALUE_ERROR);
         } catch (Exception e) {
-            throw new ResourceAccessException("Customer with personal code: " + customer.getPersonalCode() + " already exists");
+            throw new ServerErrorException(SERVER_ERROR);
         }
     }
 
     @Transactional
     @Override
     public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+        try {
+            customerRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, id));
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Transactional
     @Override
     public CustomerDto getCustomerById(Long id) {
-        return modelMapper.map(customerRepository.findById(id), CustomerDto.class);
+        try {
+            return modelMapper.map(customerRepository.findById(id)
+                    .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, id))), CustomerDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, id));
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Transactional
     @Override
     public List<CustomerDto> getAllCustomers() {
-        return customerRepository
-                .findAll()
-                .stream()
-                .map(customer -> modelMapper.map(customer, CustomerDto.class))
-                .collect(Collectors.toList());
+        try {
+            return customerRepository
+                    .findAll()
+                    .stream()
+                    .map(customer -> modelMapper.map(customer, CustomerDto.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Transactional
     @Override
     public CustomerDto updateCustomer(Long id, CustomerDto customerDto) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceAccessException("Customer not found with id: " + customerDto.getId()));
-        modelMapper.map(customerDto, customer);
-        Customer updatedCustomer = customerRepository.save(customer);
-        return modelMapper.map(updatedCustomer, CustomerDto.class);
+        try {
+            Customer customer = customerRepository.findById(id)
+                    .orElseThrow(() -> new DataIntegrityViolationException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, id)));
+            BeanUtils.copyProperties(customerDto, customer, "id", "personalCode");
+            return modelMapper.map(customerRepository.save(customer), CustomerDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, id));
+        } catch (org.hibernate.PropertyValueException e) {
+            throw new PropertyValueException(PROPERTY_VALUE_ERROR);
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Transactional
     @Override
     public CustomerDto getCustomerByEmail(String email) {
-        return modelMapper.map(customerRepository.findByEmail(email), CustomerDto.class);
+        try {
+            return modelMapper.map(customerRepository.findByEmail(email), CustomerDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND_BY_EMAIL, email));
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 
     @Transactional
     @Override
     public CustomerDto getCustomerByPersonalCode(String personalCode) {
-        return modelMapper.map(customerRepository.findByPersonalCode(personalCode), CustomerDto.class);
+        try {
+            return modelMapper.map(customerRepository.findByPersonalCode(personalCode), CustomerDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND_BY_PERSONAL_CODE, personalCode));
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
     }
 }
