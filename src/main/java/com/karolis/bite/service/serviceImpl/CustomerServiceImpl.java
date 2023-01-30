@@ -39,11 +39,10 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDto saveCustomer(CustomerDto customer) {
         try {
             Customer customerToSave = modelMapper.map(customer, Customer.class);
-            getAllCustomers().forEach(customer1 -> {
-                if (customer1.getEmail().equals(customerToSave.getEmail())) {
-                    throw new DublicateException(formatErrorMessageForConstantMessage(CUSTOMER_EMAIL_ALREADY_EXISTS, customerToSave.getEmail()));
-                }
-            });
+            Customer toCheck = customerRepository.findByEmail(customer.getEmail());
+            if(toCheck != null && !toCheck.getId().equals(customer.getId())){
+                throw new DublicateException(formatErrorMessageForConstantMessage(CUSTOMER_EMAIL_ALREADY_EXISTS, customer.getEmail()));
+            }
             return modelMapper.map(customerRepository.save(customerToSave), CustomerDto.class);
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, customer.getId()));
