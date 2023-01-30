@@ -22,6 +22,13 @@ public class ServiceForSaleController {
         return ResponseEntity.ok(serviceForSaleService.getAllServices());
     }
 
+    //Demo method to create services
+    @GetMapping("/create")
+    public ResponseEntity<List<ServiceForSaleDto>> createServices() {
+        serviceForSaleService.createServices();
+        return ResponseEntity.ok(serviceForSaleService.getAllServices());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ServiceForSaleDto> getServiceForSaleById(@PathVariable Long id) {
         return ResponseEntity.ok(serviceForSaleService.getServiceById(id));

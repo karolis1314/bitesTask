@@ -1,6 +1,7 @@
 package com.karolis.bite.service.serviceImpl;
 
 import com.karolis.bite.dto.CustomerDto;
+import com.karolis.bite.exceptions.DublicateException;
 import com.karolis.bite.exceptions.NotFoundException;
 import com.karolis.bite.exceptions.PropertyValueException;
 import com.karolis.bite.exceptions.ServerErrorException;
@@ -37,11 +38,18 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerDto saveCustomer(CustomerDto customer) {
         try {
-            return modelMapper.map(customerRepository
-                    .save(modelMapper.map(customer, Customer.class)), CustomerDto.class);
+            Customer customerToSave = modelMapper.map(customer, Customer.class);
+            getAllCustomers().forEach(customer1 -> {
+                if (customer1.getEmail().equals(customerToSave.getEmail())) {
+                    throw new DublicateException(formatErrorMessageForConstantMessage(CUSTOMER_EMAIL_ALREADY_EXISTS, customerToSave.getEmail()));
+                }
+            });
+            return modelMapper.map(customerRepository.save(customerToSave), CustomerDto.class);
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException(formatErrorMessageForConstantMessage(CUSTOMER_NOT_FOUND, customer.getId()));
-        } catch (org.hibernate.PropertyValueException e) {
+        } catch(DublicateException e){
+            throw new DublicateException(formatErrorMessageForConstantMessage(CUSTOMER_EMAIL_ALREADY_EXISTS, customer.getEmail()));
+        }catch (org.hibernate.PropertyValueException e) {
             throw new PropertyValueException(PROPERTY_VALUE_ERROR);
         } catch (Exception e) {
             throw new ServerErrorException(SERVER_ERROR);

@@ -1,6 +1,7 @@
 package com.karolis.bite.service.serviceImpl;
 
 import com.karolis.bite.dto.ServiceForSaleDto;
+import com.karolis.bite.enums.ServicesEnum;
 import com.karolis.bite.exceptions.NotFoundException;
 import com.karolis.bite.exceptions.PropertyValueException;
 import com.karolis.bite.exceptions.ServerErrorException;
@@ -113,10 +114,26 @@ public class ServiceForSaleImpl implements ServiceForSaleService {
         }
     }
 
+
+    @Transactional
+    @Override
+    public void createServices() {
+        try {
+            serviceRepository.save(new ServiceForSale(1L, "5G", ServicesEnum.ACTIVE,"Best 5G services."));
+            serviceRepository.save(new ServiceForSale(2L, "4G", ServicesEnum.ACTIVE,"Best 4G services."));
+            serviceRepository.save(new ServiceForSale(3L, "3G", ServicesEnum.ACTIVE,"Best 3G services."));
+            serviceRepository.save(new ServiceForSale(4L, "2G", ServicesEnum.ACTIVE,"Best 2G services."));
+        } catch (Exception e) {
+            throw new ServerErrorException(SERVER_ERROR);
+        }
+    }
+
     private ServiceForSaleDto updateChoice(Long id, ServiceForSaleDto serviceForSaleDto, String... types) {
         ServiceForSale serviceForSale = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(formatErrorMessageForConstantMessage(SERVICE_NOT_FOUND, id)));
         BeanUtils.copyProperties(serviceForSaleDto, serviceForSale, types);
         return modelMapper.map(serviceRepository.save(serviceForSale), ServiceForSaleDto.class);
     }
+
+
 }

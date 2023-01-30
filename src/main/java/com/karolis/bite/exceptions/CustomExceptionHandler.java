@@ -27,4 +27,9 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(500).body(new ApiError(500L, exception.getMessage(), "Try again later or call support."));
     }
 
+    @ExceptionHandler(DublicateException.class)
+    public ResponseEntity<ApiError> dublicateExceptionHandler(DublicateException exception){
+        return ResponseEntity.status(409).body(new ApiError(409L, exception.getMessage(), "Try again later or call support."));
+    }
+
 }

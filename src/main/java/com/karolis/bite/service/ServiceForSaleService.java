@@ -18,4 +18,6 @@ public interface ServiceForSaleService {
 
     ServiceForSaleDto updateServiceStatus(Long id, ServiceForSaleDto serviceForSaleDto);
 
+    void createServices();
+
 }
