@@ -23,6 +23,7 @@ import static com.karolis.bite.Constants.AccountExceptionConstants.*;
 import static com.karolis.bite.Constants.CommonMethods.formatErrorMessageForConstantMessage;
 import static com.karolis.bite.Constants.GeneralErrorMessages.*;
 
+
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -31,6 +32,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
 
     private final CustomerServiceImpl customerService;
+
 
     @Autowired
     public AccountServiceImpl(ModelMapper modelMapper, AccountRepository accountRepository, CustomerServiceImpl customerService) {
