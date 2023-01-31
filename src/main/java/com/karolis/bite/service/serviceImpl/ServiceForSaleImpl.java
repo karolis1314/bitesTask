@@ -33,7 +33,6 @@ public class ServiceForSaleImpl implements ServiceForSaleService {
     private final ServiceRepository serviceRepository;
 
     private final String SERVICE_NOT_FOUND = "Service with id %s not found";
-
     private final KafkaTemplate<String, String> kafkaTemplate;
 
 
