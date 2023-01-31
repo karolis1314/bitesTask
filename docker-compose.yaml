@@ -39,6 +39,15 @@ services:
       - zookeeper
     ports:
       - "8080:8080"
+  front:
+    image: karolisval/frontbite:0.0.1
+    container_name: front
+    networks:
+      - kafka
+    depends_on:
+      - bite
+    ports:
+      - "3000:3000"
 networks:
   kafka:
     driver: bridge
