@@ -1,0 +1,43 @@
+image: maven:latest
+
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+build:
+  stage: build
+  tags:
+    - docker
+  script:
+    - echo "Maven compile started...."
+    - "mvn compile"
+
+test:
+  stage: test
+  tags:
+    - docker
+  script:
+    - echo "Maven tests started..."
+    - "mvn test"
+
+package:
+  stage: package
+  tags:
+    - docker
+  script:
+    - echo "Maven has started to package the application...."
+    - "mvn package"
+  artifacts:
+    paths:
+      - target/*.jar
+
+deploy:
+  stage: deploy
+  tags:
+    - docker
+  script:
+    - docker build -t bite:0.0.1 .
+  only:
+    - master
