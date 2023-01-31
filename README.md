@@ -12,6 +12,8 @@ Some logs are sent to Kafka topics, dependent on the class.
 There are postman collections added to the project, which can be used to test the application.
 bite/src/main/resources/postman
 
+To create a customer via front end, you must click LOGIN, it will create custumer.
+
 There are test classes added as well.
 
 
